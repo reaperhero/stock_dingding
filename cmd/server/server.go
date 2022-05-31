@@ -24,7 +24,6 @@ func ImportExcelToDB() {
 			lineSlice[k] = v
 		}
 		setNumToFloat([]int{3, 4, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 22, 25, 28, 33, 34, 35, 36, 37, 38, 39, 40, 41}, lineSlice)
-
 		// 万
 		setNumToWan([]int{5, 6, 21, 23, 24, 26, 27}, lineSlice)
 		// 亿
