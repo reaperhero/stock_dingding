@@ -1,14 +1,20 @@
-package init
+package config
 
 import (
 	log "github.com/sirupsen/logrus"
 	"os"
 )
 
+const (
+	logDebug = "DEBUG"
+	logInfo  = "INFO"
+	logError = "ERROR"
+)
+
 func init() {
-	log.SetReportCaller(true)
+	//log.SetReportCaller(true)
 	log.SetFormatter(&log.JSONFormatter{
-		TimestampFormat:  	"2006-01-02 15:03:04",
+		TimestampFormat:   "2006-01-02 15:03:04",
 		DisableTimestamp:  false,
 		DisableHTMLEscape: false,
 		DataKey:           "",
@@ -22,5 +28,14 @@ func init() {
 	log.SetOutput(os.Stdout)
 
 	// 只记录严重或以上警告
-	log.SetLevel(log.DebugLevel)
+	switch Config.LogLevel {
+	case logDebug:
+		log.SetLevel(log.DebugLevel)
+	case logInfo:
+		log.SetLevel(log.InfoLevel)
+	case logError:
+		log.SetLevel(log.ErrorLevel)
+	default:
+		log.SetLevel(log.DebugLevel)
+	}
 }
