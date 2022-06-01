@@ -19,7 +19,7 @@ type repository struct {
 	gormDB  *gorm.DB
 }
 
-func CreateRepository() {
+func InitRepository() {
 	mysqlDB, err := sqlx.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
 		config.Config.MySQL.User,
 		config.Config.MySQL.Password,
@@ -30,7 +30,7 @@ func CreateRepository() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	gormDB, _ := gorm.Open("mysql",  fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+	gormDB, _ := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 		config.Config.MySQL.User,
 		config.Config.MySQL.Password,
 		config.Config.MySQL.IP,

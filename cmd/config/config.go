@@ -27,6 +27,7 @@ func init() {
 	v.SetConfigName("config")
 	v.SetConfigType("toml")
 	v.AddConfigPath(".")
+	v.AddConfigPath("cmd/")
 	err := v.ReadInConfig()
 	if err != nil {
 		log.Fatal("read config failed: %v", err)

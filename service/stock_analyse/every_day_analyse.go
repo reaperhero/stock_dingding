@@ -2,18 +2,21 @@ package stock_analyse
 
 import (
 	"fmt"
+	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
+	log "github.com/sirupsen/logrus"
 	"sort"
 	"time"
 )
 
-func DailyLimitStatistics() (resultStock map[string][]string,maxCount int){
+// 最近7天某天涨幅超过9%，统计次数
+// 农牧饲渔 [罗 牛 山+涨停1次 敦煌种业+涨停1次]
+func DailyLimitStatistics(searchDay string) (resultStock map[string][]string, maxCount int) {
 	list, _ := repository.Repository.ListStockPriceRanking(time.Now().Add(-time.Hour*24*7), time.Now(), 9)
-	sort.Slice(list, func(i, j int) bool {
-		return list[i].IncreaseSpeed > list[j].IncreaseSpeed
-	})
-	m := make(map[string]int)
 
+	var (
+		m = make(map[string]int)
+	)
 	for _, ranking := range list {
 		m[ranking.StockCode]++
 	}
@@ -25,10 +28,11 @@ func DailyLimitStatistics() (resultStock map[string][]string,maxCount int){
 		Count           int
 		Subordinate     string
 	}
+
 	var result []rank // 股票+涨停次数
 	for k, count := range m {
 		for _, ranking := range list {
-			if ranking.StockCode == k && ranking.CreateTime.Day() == 31 {
+			if ranking.StockCode == k && ranking.CreateTime.Format("2006-01-02") == searchDay {
 				result = append(result, rank{
 					StockCode:       ranking.StockCode,
 					StockName:       ranking.StockName,
@@ -55,5 +59,14 @@ func DailyLimitStatistics() (resultStock map[string][]string,maxCount int){
 		}
 	}
 
-	return hangMap,maxCount
+	return hangMap, maxCount
+}
+
+func ChinaStockType() []model.StockPriceRanking {
+	list, err := repository.Repository.GetAllStock()
+	if err != nil {
+		log.Infoln(err)
+		return nil
+	}
+	return list
 }

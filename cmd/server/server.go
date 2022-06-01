@@ -5,7 +5,9 @@ import (
 	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
 	"github.com/reaperhero/stock_dingding/service/excel"
-	"log"
+	"github.com/reaperhero/stock_dingding/service/stock_analyse"
+	"github.com/reaperhero/stock_dingding/utils"
+	log "github.com/sirupsen/logrus"
 	"math"
 	"regexp"
 	"strconv"
@@ -13,14 +15,53 @@ import (
 	"time"
 )
 
-func SpilderRun() {
+func reportDailyLimitStatisticsStock(searchDay string) {
+	list, maxCount := stock_analyse.DailyLimitStatistics(searchDay)
+	for i := maxCount; i > 0; i-- {
+		for hanYe, _ := range list {
+			stocks := list[hanYe]
+			if len(stocks) == i {
+				fmt.Println(hanYe, stocks)
+			}
+		}
+	}
 }
 
-func ImportExcelToDB() {
+func reportChinaAllStock() {
+	list := stock_analyse.ChinaStockType()
+	var m = make(map[string]*int)
+	for _, ranking := range list {
+		if _, ok := m[ranking.Subordinate]; ok {
+			*m[ranking.Subordinate]++
+			continue
+		}
+		var in = new(int)
+		m[ranking.Subordinate] = in
+	}
+
+	var (
+		source = make(map[interface{}]interface{})
+	)
+	for s, i := range m {
+		source[s] = *i
+	}
+	ks := utils.SortMapWithValue(source, true)
+	for _, k := range ks {
+		fmt.Printf("[%v]: %v只股\n", k, source[k])
+	}
+}
+
+func syncExcelToDB() {
+	list := repository.Repository.TodayStockRanking()
+	if len(list) > 0 {
+		log.Info("today has been syncExcelToDB")
+		return
+	}
 	rows := excel.LoadFromExcel("./service/excel/example/20220530.xlsx")
 	for _, row := range rows[1:] {
 		lineSlice := make([]interface{}, len(row))
 		for k, v := range row {
+			v = strings.TrimSpace(v)
 			lineSlice[k] = v
 		}
 		setNumToFloat([]int{3, 4, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 22, 25, 28, 33, 34, 35, 36, 37, 38, 39, 40, 41}, lineSlice)
@@ -29,7 +70,6 @@ func ImportExcelToDB() {
 		// 亿
 		setNumToYi([]int{11, 29, 30, 31, 32}, lineSlice)
 
-		fmt.Println(lineSlice)
 		now := time.Now()
 		err := repository.Repository.CreateStockPriceRanking(model.StockPriceRanking{
 			CreateTime:          now,
@@ -88,7 +128,7 @@ func setNumToFloat(indexs []int, s []interface{}) {
 		case reg.MatchString(s[index].(string)):
 			v, _ := strconv.ParseFloat(s[index].(string), 64)
 			s[index] = v
-		case strings.Contains(s[index].(string), " —"):
+		case strings.Contains(s[index].(string), "—"):
 			s[index] = 0.0
 		}
 	}
