@@ -20,6 +20,8 @@ func (r *repository) TodayStockRanking() []model.StockPriceRanking {
 	return spStocks
 }
 
+
+//
 func (r *repository) ListStockPriceRanking(startTime, endTime time.Time, increasePrecent float64) ([]model.StockPriceRanking, error) {
 	var spStocks []model.StockPriceRanking
 	err := r.gormDB.Where("increase_precent > ?", increasePrecent).Where("create_time > ?", startTime).Where("create_time < ?", endTime).Find(&spStocks).Error
