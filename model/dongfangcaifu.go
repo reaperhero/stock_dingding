@@ -1,9 +1,11 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
-type StockPriceRanking struct {
-	ID                  int64     `db:"id" json:"id"`
+type Stock struct {
+	ID                  int64     `db:"id" json:"id" gorm:"id,order_by_primary_key"`
 	CreateTime          time.Time `db:"create_time" json:"create_time"`
 	StockCode           string    `db:"stock_code" json:"stock_code"`                       //  代码
 	StockName           string    `db:"stock_name" json:"stock_name"`                       //  名称
@@ -46,4 +48,9 @@ type StockPriceRanking struct {
 	UpThisYear          float64   `db:"up_this_year" json:"up_this_year"`                   //  今年涨幅
 	UpLastMonth         float64   `db:"up_last_month" json:"up_last_month"`                 //  近一月涨幅
 	UpPastYear          float64   `db:"up_past_year" json:"up_past_year"`                   //  近一年涨幅
+}
+
+// TableName 会将 User 的表名重写为 `profiles`
+func (s Stock) TableName() string {
+	return "stock_price_ranking"
 }

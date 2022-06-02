@@ -2,8 +2,11 @@ package server
 
 import (
 	"fmt"
+	"github.com/reaperhero/stock_dingding/model"
 	"github.com/spf13/cobra"
 	"os"
+	"sort"
+	"strings"
 )
 
 var rootCmd = &cobra.Command{}
@@ -16,15 +19,6 @@ func Execute() {
 }
 
 var (
-	createCmd = &cobra.Command{
-		Use:   "sync",
-		Short: "sync db",
-		Long:  `sync excel data to db`,
-		Run: func(cmd *cobra.Command, args []string) {
-			syncExcelToDB()
-		},
-	}
-
 	classIfication = &cobra.Command{
 		Use:   "classification",
 		Short: "A stock classification type",
@@ -37,4 +31,18 @@ var (
 
 func init() {
 	rootCmd.AddCommand(createCmd, reportCmd, classIfication)
+}
+func sortStock(source []model.Stock) {
+	sort.Slice(source, func(i, j int) bool {
+		if strings.Compare(source[i].Subordinate, source[j].Subordinate) > 0 {
+			return true
+		}
+		if strings.Compare(source[i].Subordinate, source[j].Subordinate) < 0 {
+			return false
+		}
+		if source[i].Pe >= source[j].Pe {
+			return false
+		}
+		return true
+	})
 }

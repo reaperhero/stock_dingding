@@ -1,13 +1,11 @@
 package server
 
 import (
-	"fmt"
 	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
 	"github.com/reaperhero/stock_dingding/service/excel"
-	"github.com/reaperhero/stock_dingding/service/stock_analyse"
-	"github.com/reaperhero/stock_dingding/utils"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"math"
 	"regexp"
 	"strconv"
@@ -15,63 +13,50 @@ import (
 	"time"
 )
 
-func reportDailyLimitStatisticsStock(searchDay string) {
-	list, maxCount := stock_analyse.DailyLimitStatistics(searchDay)
-	for i := maxCount; i > 0; i-- {
-		for hanYe, _ := range list {
-			stocks := list[hanYe]
-			if len(stocks) == i {
-				fmt.Println(hanYe, stocks)
-			}
-		}
+var (
+	createCmd = &cobra.Command{
+		Use:   "sync",
+		Short: "sync db",
+		Long:  `sync excel data to db`,
+		Run: func(cmd *cobra.Command, args []string) {
+			syncExcelToDB()
+		},
 	}
-}
-
-func reportChinaAllStock() {
-	list := stock_analyse.ChinaStockType()
-	var m = make(map[string]*int)
-	for _, ranking := range list {
-		if _, ok := m[ranking.Subordinate]; ok {
-			*m[ranking.Subordinate]++
-			continue
-		}
-		var in = new(int)
-		m[ranking.Subordinate] = in
-	}
-
-	var (
-		source = make(map[interface{}]interface{})
-	)
-	for s, i := range m {
-		source[s] = *i
-	}
-	ks := utils.SortMapWithValue(source, true)
-	for _, k := range ks {
-		fmt.Printf("[%v]: %v只股\n", k, source[k])
-	}
-}
+	xlsFile      = "./service/excel/example/20220530.xlsx"
+	timeFormat   = "2006-01-02"
+	strField     = []int{3, 4, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 22, 25, 28, 33, 34, 35, 36, 37, 38, 39, 40, 41}
+	defaultField = []int{13}
+	wanField     = []int{5, 6, 21, 23, 24, 26, 27}
+	yiField      = []int{11, 29, 30, 31, 32}
+)
 
 func syncExcelToDB() {
-	list := repository.Repository.TodayStockRanking()
-	if len(list) > 0 {
+	t := repository.Repository.GetLastCreateTime()
+	if time.Now().Format(timeFormat) == t.Format(timeFormat) || time.Now().Hour() > 22 {
 		log.Info("today has been syncExcelToDB")
 		return
 	}
-	rows := excel.LoadFromExcel("./service/excel/example/20220530.xlsx")
+	rows := excel.LoadFromExcel(xlsFile)
+
+	now := time.Now()
+
 	for _, row := range rows[1:] {
 		lineSlice := make([]interface{}, len(row))
 		for k, v := range row {
 			v = strings.TrimSpace(v)
 			lineSlice[k] = v
 		}
-		setNumToFloat([]int{3, 4, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 22, 25, 28, 33, 34, 35, 36, 37, 38, 39, 40, 41}, lineSlice)
-		// 万
-		setNumToWan([]int{5, 6, 21, 23, 24, 26, 27}, lineSlice)
-		// 亿
-		setNumToYi([]int{11, 29, 30, 31, 32}, lineSlice)
 
-		now := time.Now()
-		err := repository.Repository.CreateStockPriceRanking(model.StockPriceRanking{
+		// 配置浮点
+		setNumToFloat(strField, lineSlice)
+		// 万
+		setNumToWan(wanField, lineSlice)
+		// 亿
+		setNumToYi(yiField, lineSlice)
+		// 填充默认数据
+		setDefaultVaule(defaultField,lineSlice)
+
+		err := repository.Repository.CreateStockPriceRanking(model.Stock{
 			CreateTime:          now,
 			StockCode:           lineSlice[1].(string),
 			StockName:           lineSlice[2].(string),
@@ -130,6 +115,16 @@ func setNumToFloat(indexs []int, s []interface{}) {
 			s[index] = v
 		case strings.Contains(s[index].(string), "—"):
 			s[index] = 0.0
+		}
+	}
+}
+
+func setDefaultVaule(indexs []int, s []interface{}) {
+	for k, index := range indexs {
+		if k == 1 {
+			if s[index].(string) == " —" {
+				s[index] = "未知行业"
+			}
 		}
 	}
 }

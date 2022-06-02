@@ -6,13 +6,12 @@ import (
 	"github.com/reaperhero/stock_dingding/model/repository"
 	log "github.com/sirupsen/logrus"
 	"sort"
-	"time"
 )
 
 // 最近7天某天涨幅超过9%，统计次数
 // 农牧饲渔 [罗 牛 山+涨停1次 敦煌种业+涨停1次]
 func DailyLimitStatistics(searchDay string) (resultStock map[string][]string, maxCount int) {
-	list, _ := repository.Repository.ListStockPriceRanking(time.Now().Add(-time.Hour*24*7), time.Now(), 9)
+	list, _ := repository.Repository.ListHardenStockLastDay()
 
 	var (
 		m = make(map[string]int)
@@ -62,7 +61,15 @@ func DailyLimitStatistics(searchDay string) (resultStock map[string][]string, ma
 	return hangMap, maxCount
 }
 
-func ChinaStockType() []model.StockPriceRanking {
+func GetLastHardenStock() []model.Stock {
+	list, err := repository.Repository.ListHardenStockLastDay()
+	if err!=nil{
+		log.Errorf("[repository.Repository.ListHardenStockLastDay] %v",err)
+	}
+	return list
+}
+
+func ChinaStockType() []model.Stock {
 	list, err := repository.Repository.GetAllStock()
 	if err != nil {
 		log.Infoln(err)

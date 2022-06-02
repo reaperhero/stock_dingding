@@ -2,11 +2,9 @@ package server
 
 import (
 	"github.com/spf13/cobra"
-	"time"
 )
 
 var (
-	day = ""
 	reportCmd = &cobra.Command{
 		Use:   "report",
 		Short: "show every harden",
@@ -15,12 +13,19 @@ var (
 			return []string{"--day", "test"}, cobra.ShellCompDirectiveDefault
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			reportDailyLimitStatisticsStock(day)
+			reportDailyLimitStatisticsStock()
+		},
+	}
+	hardenTodayCmd = &cobra.Command{
+		Use:   "h_today",
+		Short: "show every harden",
+		Long:  "show every harden",
+		Run: func(cmd *cobra.Command, args []string) {
+			reportDailyLimitStatisticsStock()
 		},
 	}
 )
 
-func init()  {
-	reportCmd.Flags().StringVar(&day, "day", "", time.Now().Format("2006-01-02"))
-
+func init() {
+	reportCmd.AddCommand(hardenTodayCmd)
 }

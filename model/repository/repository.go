@@ -48,5 +48,5 @@ func InitRepository() {
 
 func (r *repository) initGormDB() {
 	r.gormDB.SingularTable(true)
-	r.gormDB.AutoMigrate(&model.StockPriceRanking{})
+	r.gormDB.AutoMigrate(&model.Stock{})
 }
