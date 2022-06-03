@@ -2,11 +2,8 @@ package server
 
 import (
 	"fmt"
-	"github.com/reaperhero/stock_dingding/model"
 	"github.com/spf13/cobra"
 	"os"
-	"sort"
-	"strings"
 )
 
 var rootCmd = &cobra.Command{}
@@ -30,19 +27,7 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(createCmd, reportCmd, classIfication)
+	rootCmd.AddCommand(createCmd, reportCmd, classIfication,searchCmd)
 }
-func sortStock(source []model.Stock) {
-	sort.Slice(source, func(i, j int) bool {
-		if strings.Compare(source[i].Subordinate, source[j].Subordinate) > 0 {
-			return true
-		}
-		if strings.Compare(source[i].Subordinate, source[j].Subordinate) < 0 {
-			return false
-		}
-		if source[i].Pe >= source[j].Pe {
-			return false
-		}
-		return true
-	})
-}
+
+

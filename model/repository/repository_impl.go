@@ -30,7 +30,7 @@ func (r *repository) ListHardenStockLastDay() ([]model.Stock, error) {
 		lastStock       model.Stock
 		spStocks        []model.Stock
 	)
-	if err := r.gormDB.Debug().Last(&lastStock).Error; err != nil {
+	if err := r.gormDB.Last(&lastStock).Error; err != nil {
 		return nil, err
 	}
 	err := r.gormDB.Where("increase_precent > ?", hardenIncrease).Where("from_days(to_days(create_time)) = ?", lastStock.CreateTime.Format("2006-01-02")).Find(&spStocks).Error
@@ -70,7 +70,7 @@ func (r *repository) GetAllStockBySubordinate(subordinate string) ([]model.Stock
 		return nil, err
 	}
 	var spStocks []model.Stock
-	err := r.gormDB.Where("from_days(to_days(create_time)) = ?", lastStock.CreateTime.Format("2006-01-02")).Where("subordinate", subordinate).Find(&spStocks).Error
+	err := r.gormDB.Where("from_days(to_days(create_time)) = ?", lastStock.CreateTime.Format("2006-01-02")).Where("subordinate = ?", subordinate).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}

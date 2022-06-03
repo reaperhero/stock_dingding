@@ -63,8 +63,8 @@ func DailyLimitStatistics(searchDay string) (resultStock map[string][]string, ma
 
 func GetLastHardenStock() []model.Stock {
 	list, err := repository.Repository.ListHardenStockLastDay()
-	if err!=nil{
-		log.Errorf("[repository.Repository.ListHardenStockLastDay] %v",err)
+	if err != nil {
+		log.Errorf("[repository.Repository.ListHardenStockLastDay] %v", err)
 	}
 	return list
 }
@@ -76,4 +76,12 @@ func ChinaStockType() []model.Stock {
 		return nil
 	}
 	return list
+}
+
+func GetStockBySubordinate(subordinate string) ([]model.Stock, error) {
+	list, err := repository.Repository.GetAllStockBySubordinate(subordinate)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
