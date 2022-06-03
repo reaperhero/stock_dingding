@@ -2,17 +2,17 @@ package server
 
 import (
 	"fmt"
-	"github.com/reaperhero/stock_dingding/service/stock_analyse"
+	"github.com/reaperhero/stock_dingding/service/stock"
 	"github.com/reaperhero/stock_dingding/utils"
 )
 
 func reportDailyLimitStatisticsStock() {
-	list := stock_analyse.GetLastHardenStock()
+	list := stock.GetLastHardenStock()
 	echoStock(list,sortWithSubordinatePe)
 }
 
 func reportChinaAllStock() {
-	list := stock_analyse.ChinaStockType()
+	list := stock.ChinaStockType()
 	var m = make(map[string]*int)
 	for _, ranking := range list {
 		if _, ok := m[ranking.Subordinate]; ok {

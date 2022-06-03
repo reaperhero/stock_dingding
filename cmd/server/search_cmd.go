@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/reaperhero/stock_dingding/service/stock_analyse"
+	"github.com/reaperhero/stock_dingding/service/stock"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +21,7 @@ var (
 		Long:  "show every harden",
 		Run: func(cmd *cobra.Command, args []string) {
 			for _, arg := range args {
-				list, err := stock_analyse.GetStockBySubordinate(arg)
+				list, err := stock.GetStockBySubordinate(arg)
 				if err != nil {
 					log.Fatal(err)
 				}

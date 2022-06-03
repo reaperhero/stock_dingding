@@ -1,4 +1,4 @@
-package stock_analyse
+package stock
 
 var (
 	A_SHANGHAI_STOCK = []string{"600", "601", "603"}

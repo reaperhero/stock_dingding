@@ -12,6 +12,11 @@ var Config config
 type config struct {
 	LogLevel string
 	MySQL    MySQLConfig
+	Web      WebConfig
+}
+
+type WebConfig struct {
+	Port int
 }
 
 type MySQLConfig struct {

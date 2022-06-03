@@ -50,7 +50,11 @@ type Stock struct {
 	UpPastYear          float64   `db:"up_past_year" json:"up_past_year"`                   //  近一年涨幅
 }
 
+
+const (
+	StockTableName = "stock_price_ranking"
+)
 // TableName 会将 User 的表名重写为 `profiles`
 func (s Stock) TableName() string {
-	return "stock_price_ranking"
+	return StockTableName
 }

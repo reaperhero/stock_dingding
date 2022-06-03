@@ -1,4 +1,4 @@
-package stock_analyse
+package stock
 
 import (
 	"fmt"

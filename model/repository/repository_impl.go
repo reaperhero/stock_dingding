@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/reaperhero/stock_dingding/model"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -27,8 +29,8 @@ func (r *repository) ListStockPriceRanking(startTime, endTime time.Time) ([]mode
 
 func (r *repository) ListHardenStockLastDay() ([]model.Stock, error) {
 	var (
-		lastStock       model.Stock
-		spStocks        []model.Stock
+		lastStock model.Stock
+		spStocks  []model.Stock
 	)
 	if err := r.gormDB.Last(&lastStock).Error; err != nil {
 		return nil, err
@@ -52,6 +54,36 @@ func (r *repository) GetAllStock() ([]model.Stock, error) {
 		return nil, err
 	}
 	return spStocks, nil
+}
+
+func (r *repository) GetAllSubordinate() ([]string, error) {
+	var lastStock model.Stock
+	if err := r.gormDB.Last(&lastStock).Error; err != nil {
+		return nil, err
+	}
+	var subordinates []string
+	rows, err := r.gormDB.Raw(fmt.Sprintf("SELECT DISTINCT subordinate FROM %s WHERE from_days(to_days(create_time)) = '%s'",
+		model.StockTableName, lastStock.CreateTime.Format("2006-01-02"))).Rows()
+	if err != nil {
+		return nil, err
+	}
+	//rows, err := r.gormDB.Model(&model.Stock{}).Where("from_days(to_days(create_time)) = ?",lastStock.CreateTime.Format("2006-01-02")).Select("subordinate").Rows()
+
+	defer rows.Close()
+	if err != nil {
+		log.Errorf("[repository.GetAllSubordinate] %v", err)
+	}
+
+	for rows.Next() {
+		var name string
+		err := rows.Scan(&name)
+		if err != nil {
+			log.Errorf("[repository.GetAllSubordinate] rows.Scan %v", err)
+			continue
+		}
+		subordinates = append(subordinates, name)
+	}
+	return subordinates, nil
 }
 
 func (r *repository) GetLastCreateTime() time.Time {

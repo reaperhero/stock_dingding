@@ -12,15 +12,12 @@ const (
 )
 
 func init() {
-	//log.SetReportCaller(true)
 	log.SetFormatter(&log.JSONFormatter{
 		TimestampFormat:   "2006-01-02 15:03:04",
 		DisableTimestamp:  false,
-		DisableHTMLEscape: false,
 		DataKey:           "",
 		FieldMap:          nil,
 		CallerPrettyfier:  nil,
-		PrettyPrint:       true,
 	})
 
 	// 输出stdout而不是默认的stderr，也可以是一个文件

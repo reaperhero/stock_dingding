@@ -6,3 +6,7 @@ port = 3306
 user = "root"
 password = "=nXCwk8l<@Dx5bL%"
 database = "dongfang_stock"
+
+
+[web]
+port = 8080
