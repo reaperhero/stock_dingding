@@ -9,15 +9,15 @@ import (
 	"strings"
 )
 
-func echoStock(list []model.Stock, less sortFun) {
+func EchoStock(list []model.Stock, less sortFun) string {
 	if less != nil {
 		customSortStock(list, less)
 	}
 
-	table, err := gotable.Create("行业", "代码", "名称", "市值", "pe", "涨幅")
+	table, err := gotable.Create("行业", "代码", "名称", "市值", "pe", "涨幅","6日涨幅")
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return ""
 	}
 
 	for _, stock := range list {
@@ -28,41 +28,64 @@ func echoStock(list []model.Stock, less sortFun) {
 			fmt.Sprintf("%.1f", stock.TotalMarketValue),
 			fmt.Sprintf("%.1f", stock.Pe),
 			fmt.Sprintf("%.1f", stock.IncreasePrecent),
+			fmt.Sprintf("%.1f", stock.SixDaysUp),
 		})
 		if err != nil {
 			log.Errorf("[table.AddRow] %v", err)
 		}
 	}
-	fmt.Println(table)
+	return table.String()
 }
 
 type sortFun = func(x, y model.Stock) bool
 
 var (
-	sortWithSubordinatePe sortFun = func(x, y model.Stock) bool {
+	SortWithSubordinatePe sortFun = func(x, y model.Stock) bool {
 		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
 			return true
 		}
 		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
 			return false
 		}
-		if x.Pe >= y.Pe {
+		if x.Pe > y.Pe {
+			return true
+		}
+		if x.Pe < y.Pe {
 			return false
 		}
 		return true
 	}
-	sortWithSubordinateMarkValue sortFun = func(x, y model.Stock) bool {
+	SortWithSubordinateMarkValue sortFun = func(x, y model.Stock) bool {
 		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
 			return true
 		}
 		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
 			return false
 		}
-		if x.TotalMarketValue >= y.TotalMarketValue {
+		if x.TotalMarketValue > y.TotalMarketValue {
+			return true
+		}
+		if x.TotalMarketValue < y.TotalMarketValue {
 			return false
 		}
 		return true
 	}
+	SortWithSubordinateSixDaysChange sortFun = func(x, y model.Stock) bool {
+		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
+			return true
+		}
+		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
+			return false
+		}
+		if x.SixDaysUp > y.SixDaysUp {
+			return true
+		}
+		if x.SixDaysUp < y.SixDaysUp {
+			return false
+		}
+		return true
+	}
+
 )
 
 func customSortStock(source []model.Stock, less sortFun) {

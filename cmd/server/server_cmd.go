@@ -8,7 +8,7 @@ import (
 
 func reportDailyLimitStatisticsStock() {
 	list := stock.GetLastHardenStock()
-	echoStock(list,sortWithSubordinatePe)
+	fmt.Println(EchoStock(list, SortWithSubordinatePe))
 }
 
 func reportChinaAllStock() {

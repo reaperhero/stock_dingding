@@ -85,3 +85,4 @@ func GetStockBySubordinate(subordinate string) ([]model.Stock, error) {
 	}
 	return list, nil
 }
+

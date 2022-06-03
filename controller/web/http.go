@@ -10,6 +10,6 @@ func SetHttpHander(e *echo.Echo) {
 	{
 		apiV1.GET("/health", health)
 		apiV1.GET("/get-stock-subordinate", GetStockBySubordinate)
-		apiV1.GET("/health", health)
+		apiV1.GET("/sync-stock-subordinate", SyncSubordinateToFile)
 	}
 }

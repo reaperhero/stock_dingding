@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/reaperhero/stock_dingding/service/stock"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -25,7 +26,7 @@ var (
 				if err != nil {
 					log.Fatal(err)
 				}
-				echoStock(list,sortWithSubordinateMarkValue)
+				fmt.Println(EchoStock(list, SortWithSubordinateMarkValue))
 			}
 		},
 	}

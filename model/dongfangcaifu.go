@@ -5,7 +5,7 @@ import (
 )
 
 type Stock struct {
-	ID                  int64     `db:"id" json:"id" gorm:"id,order_by_primary_key"`
+	ID                  int64     `db:"id" json:"id"`
 	CreateTime          time.Time `db:"create_time" json:"create_time"`
 	StockCode           string    `db:"stock_code" json:"stock_code"`                       //  代码
 	StockName           string    `db:"stock_name" json:"stock_name"`                       //  名称
