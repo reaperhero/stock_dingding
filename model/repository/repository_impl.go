@@ -86,6 +86,16 @@ func (r *repository) GetAllSubordinate() ([]string, error) {
 	return subordinates, nil
 }
 
+func (r *repository) GetRankSubordinate(subordinate string) ([]model.Stock, error) {
+	lastTime := r.GetLastCreateTime()
+	var stocks []model.Stock
+	err := r.gormDB.Where("from_days(to_days(create_time))= ? and subordinate = ?", lastTime.Format("2006-01-02"),subordinate).Find(&stocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return stocks,nil
+}
+
 func (r *repository) GetLastCreateTime() time.Time {
 
 	var lastStock model.Stock

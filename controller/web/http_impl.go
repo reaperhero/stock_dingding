@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/reaperhero/stock_dingding/cmd/server"
 	"github.com/reaperhero/stock_dingding/model/repository"
+	"github.com/reaperhero/stock_dingding/utils"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 )
@@ -18,6 +19,29 @@ func GetStockBySubordinate(context echo.Context) error {
 		log.Error(err)
 	}
 	return context.JSON(200, list)
+}
+
+func GetRankBySubordinate(context echo.Context) error {
+	subordinate := context.QueryParam("subordinate")
+	list, err := repository.Repository.GetRankSubordinate(subordinate)
+	if err != nil {
+		log.Error(err)
+	}
+
+	server.CustomSortStock(list, server.SortWithSubordinateIncrease)
+	var result []mStcok
+	for _, stock := range list {
+		l := new(mStcok)
+		err := utils.StructAssignAonsistent(l, stock)
+		if err != nil {
+			return err
+		}
+		result = append(result, *l)
+	}
+	return context.JSON(200, map[string]interface{}{
+		"count": len(result),
+		"item":  result,
+	})
 }
 
 func SyncSubordinateToFile(context echo.Context) error {

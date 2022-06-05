@@ -11,7 +11,7 @@ import (
 
 func EchoStock(list []model.Stock, less sortFun) string {
 	if less != nil {
-		customSortStock(list, less)
+		CustomSortStock(list, less)
 	}
 
 	table, err := gotable.Create("行业", "代码", "名称", "市值", "pe", "涨幅","6日涨幅")
@@ -86,9 +86,31 @@ var (
 		return true
 	}
 
+	SortWithSubordinateIncrease sortFun = func(x, y model.Stock) bool {
+		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
+			return true
+		}
+		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
+			return false
+		}
+		if x.IncreasePrecent > y.IncreasePrecent {
+			return true
+		}
+		if x.IncreasePrecent < y.IncreasePrecent {
+			return false
+		}
+		if x.TotalMarketValue > y.TotalMarketValue {
+			return true
+		}
+		if x.TotalMarketValue < y.TotalMarketValue {
+			return false
+		}
+		return true
+	}
+
 )
 
-func customSortStock(source []model.Stock, less sortFun) {
+func CustomSortStock(source []model.Stock, less sortFun) {
 	sort.Sort(customSort{
 		source: source,
 		less:   less,
