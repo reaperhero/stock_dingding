@@ -137,7 +137,7 @@ func (r *repository) GetAllStockBySubordinate(subordinate string) ([]model.Stock
 		return nil, err
 	}
 	var spStocks []model.Stock
-	err := r.gormDB.Where("from_days(to_days(create_time)) = ?", lastStock.CreateTime.Format("2006-01-02")).Where("subordinate = ?", subordinate).Find(&spStocks).Error
+	err := r.gormDB.Where("create_time > ? and subordinate = ?", getTimeZero(lastStock.CreateTime),subordinate).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
