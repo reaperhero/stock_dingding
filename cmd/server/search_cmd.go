@@ -23,7 +23,7 @@ var (
 				if err != nil {
 					log.Fatal(err)
 				}
-				fmt.Println(EchoStock(list, SortWithSubordinateThreeDaysChange))
+				fmt.Println(EchoStock(list, SortWithSubordinateSixDaysChange))
 			}
 		},
 	}

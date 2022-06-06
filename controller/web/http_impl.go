@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"github.com/labstack/echo"
 	"github.com/reaperhero/stock_dingding/cmd/server"
 	"github.com/reaperhero/stock_dingding/model/repository"
@@ -57,8 +58,12 @@ func SyncSubordinateToFile(context echo.Context) error {
 			return err
 		}
 
-		data := server.EchoStock(stocks, server.SortWithSubordinateSixDaysChange)
-		err = ioutil.WriteFile("docs/"+t+".md", []byte(data), 0644)
+		data := fmt.Sprintf("%s \n\n\n\n\n %s",
+			server.EchoStock(stocks, server.SortWithSubordinateMarkValue),
+			server.EchoStock(stocks, server.SortWithSubordinatePe),
+		)
+
+		err = ioutil.WriteFile("docs/subordinate/"+t+".txt", []byte(data), 0644)
 		if err != nil {
 			return err
 		}
