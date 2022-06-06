@@ -59,25 +59,25 @@ func reportCareAboutStockTofile() {
 
 	list := stock.GetHardenStockWithDays(7, 2)
 	content := EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内2次涨停.md", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内2次涨停.txt", []byte(content), 0666); err != nil {
 		log.Fatal("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetHardenStockWithDays(7, 3)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内3次涨停.md", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内3次涨停.txt", []byte(content), 0666); err != nil {
 		log.Fatal("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetHardenStockWithDays(7, 4)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内4次涨停.md", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内4次涨停.txt", []byte(content), 0666); err != nil {
 		log.Fatal("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetLastHardenStock()
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"今日涨停.md", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"今日涨停.txt", []byte(content), 0666); err != nil {
 		log.Fatal("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 }
