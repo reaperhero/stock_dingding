@@ -6,9 +6,15 @@ import (
 	"github.com/reaperhero/stock_dingding/utils"
 )
 
+func reportCareAboutStock(day, count int) {
+	list := stock.GetHardenStockWithDays(day, count)
+	fmt.Println(EchoStock(list, SortWithSubordinateThreeDaysChange))
+	fmt.Println(EchoStock(list, SortWithSubordinateMarkValue))
+}
+
 func reportDailyLimitStatisticsStock() {
 	list := stock.GetLastHardenStock()
-	fmt.Println(EchoStock(list, SortWithSubordinatePe))
+	fmt.Println(EchoStock(list, SortWithSubordinateMarkValue))
 }
 
 func reportChinaAllStock() {

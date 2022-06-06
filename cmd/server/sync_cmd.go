@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
 	"github.com/reaperhero/stock_dingding/service/excel"
@@ -22,7 +23,6 @@ var (
 			syncExcelToDB()
 		},
 	}
-	xlsFile      = "./service/excel/example/20220530.xlsx"
 	timeFormat   = "2006-01-02"
 	strField     = []int{3, 4, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 22, 25, 28, 33, 34, 35, 36, 37, 38, 39, 40, 41}
 	defaultField = []int{13}
@@ -31,11 +31,12 @@ var (
 )
 
 func syncExcelToDB() {
-	t := repository.Repository.getLastCreateTime()
+	t := repository.Repository.GetLastCreateTime()
 	if time.Now().Format(timeFormat) == t.Format(timeFormat) || time.Now().Hour() > 22 {
 		log.Info("today has been syncExcelToDB")
 		return
 	}
+	xlsFile := fmt.Sprintf("./service/excel/example/%s.xlsx", time.Now().Format("20060102"))
 	rows := excel.LoadFromExcel(xlsFile)
 
 	now := time.Now()
@@ -54,7 +55,7 @@ func syncExcelToDB() {
 		// 亿
 		setNumToYi(yiField, lineSlice)
 		// 填充默认数据
-		setDefaultVaule(defaultField,lineSlice)
+		setDefaultVaule(defaultField, lineSlice)
 
 		err := repository.Repository.CreateStockPriceRanking(model.Stock{
 			CreateTime:          now,

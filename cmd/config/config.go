@@ -1,8 +1,6 @@
 package config
 
 import (
-	"encoding/json"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -42,6 +40,4 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	configValue, _ := json.Marshal(Config)
-	fmt.Println("run config: ", string(configValue))
 }

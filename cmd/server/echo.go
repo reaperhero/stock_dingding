@@ -5,16 +5,33 @@ import (
 	"github.com/liushuochen/gotable"
 	"github.com/reaperhero/stock_dingding/model"
 	log "github.com/sirupsen/logrus"
+	"reflect"
 	"sort"
-	"strings"
 )
 
+func compareFun(src,dst sortFun) bool  {
+	sf1 := reflect.ValueOf(src)
+	sf2 := reflect.ValueOf(dst)
+	return sf1.Pointer() == sf2.Pointer()
+}
 func EchoStock(list []model.Stock, less sortFun) string {
+	switch {
+	case compareFun(less,SortWithSubordinateMarkValue):
+		fmt.Println("[行业>市值]")
+	case compareFun(less,SortWithSubordinatePe):
+		fmt.Println("[行业>PE]")
+	case compareFun(less,SortWithSubordinateThreeDaysChange):
+		fmt.Println("[行业>三日涨幅]")
+	case compareFun(less,SortWithSubordinateIncrease):
+		fmt.Println("[行业>单日涨幅]")
+	case compareFun(less,SortWithSubordinateSixDaysChange):
+		fmt.Println("[行业>六日涨幅]")
+	}
 	if less != nil {
 		CustomSortStock(list, less)
 	}
 
-	table, err := gotable.Create("行业", "代码", "名称", "市值", "pe", "涨幅","6日涨幅")
+	table, err := gotable.Create("行业", "代码", "名称", "市值", "pe", "涨幅", "3日涨幅", "6日涨幅")
 	if err != nil {
 		fmt.Println(err.Error())
 		return ""
@@ -28,6 +45,7 @@ func EchoStock(list []model.Stock, less sortFun) string {
 			fmt.Sprintf("%.1f", stock.TotalMarketValue),
 			fmt.Sprintf("%.1f", stock.Pe),
 			fmt.Sprintf("%.1f", stock.IncreasePrecent),
+			fmt.Sprintf("%.1f", stock.ThreeDaysUp),
 			fmt.Sprintf("%.1f", stock.SixDaysUp),
 		})
 		if err != nil {
@@ -38,77 +56,6 @@ func EchoStock(list []model.Stock, less sortFun) string {
 }
 
 type sortFun = func(x, y model.Stock) bool
-
-var (
-	SortWithSubordinatePe sortFun = func(x, y model.Stock) bool {
-		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
-			return true
-		}
-		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
-			return false
-		}
-		if x.Pe > y.Pe {
-			return true
-		}
-		if x.Pe < y.Pe {
-			return false
-		}
-		return true
-	}
-	SortWithSubordinateMarkValue sortFun = func(x, y model.Stock) bool {
-		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
-			return true
-		}
-		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
-			return false
-		}
-		if x.TotalMarketValue > y.TotalMarketValue {
-			return true
-		}
-		if x.TotalMarketValue < y.TotalMarketValue {
-			return false
-		}
-		return true
-	}
-	SortWithSubordinateSixDaysChange sortFun = func(x, y model.Stock) bool {
-		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
-			return true
-		}
-		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
-			return false
-		}
-		if x.SixDaysUp > y.SixDaysUp {
-			return true
-		}
-		if x.SixDaysUp < y.SixDaysUp {
-			return false
-		}
-		return true
-	}
-
-	SortWithSubordinateIncrease sortFun = func(x, y model.Stock) bool {
-		if strings.Compare(x.Subordinate, y.Subordinate) > 0 {
-			return true
-		}
-		if strings.Compare(x.Subordinate, y.Subordinate) < 0 {
-			return false
-		}
-		if x.IncreasePrecent > y.IncreasePrecent {
-			return true
-		}
-		if x.IncreasePrecent < y.IncreasePrecent {
-			return false
-		}
-		if x.TotalMarketValue > y.TotalMarketValue {
-			return true
-		}
-		if x.TotalMarketValue < y.TotalMarketValue {
-			return false
-		}
-		return true
-	}
-
-)
 
 func CustomSortStock(source []model.Stock, less sortFun) {
 	sort.Sort(customSort{

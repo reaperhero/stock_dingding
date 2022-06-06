@@ -7,6 +7,17 @@ import (
 	"time"
 )
 
+func getTimeZero(t time.Time) string {
+	startTime := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	return startTime.Format("2006/01/02 15:04:05")
+}
+
+func getTimeEnd(t time.Time) string {
+	endTime := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, t.Location())
+	return endTime.Format("2006/01/02 15:04:05")
+
+}
+
 var (
 	hardenIncrease = 9.7
 	errTime        = time.Time{}
@@ -29,13 +40,27 @@ func (r *repository) ListStockPriceRanking(startTime, endTime time.Time) ([]mode
 
 func (r *repository) ListHardenStockLastDay() ([]model.Stock, error) {
 	var (
+		spStocks []model.Stock
+	)
+	lastTime := r.GetLastCreateTime()
+	err := r.gormDB.Where("increase_precent > ? and create_time > ?", hardenIncrease, getTimeZero(lastTime)).Find(&spStocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return spStocks, nil
+}
+
+func (r *repository) ListHardenStockWithDay(day int) ([]model.Stock, error) {
+	var (
 		lastStock model.Stock
 		spStocks  []model.Stock
 	)
 	if err := r.gormDB.Last(&lastStock).Error; err != nil {
 		return nil, err
 	}
-	err := r.gormDB.Where("increase_precent > ?", hardenIncrease).Where("from_days(to_days(create_time)) = ?", lastStock.CreateTime.Format("2006-01-02")).Find(&spStocks).Error
+	endDay := getTimeZero(lastStock.CreateTime)
+	startDay := getTimeEnd(lastStock.CreateTime.Add(-time.Duration(day*24) * time.Hour))
+	err := r.gormDB.Where("increase_precent > ? and create_time > ? and create_time < ?", hardenIncrease, startDay, endDay).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
@@ -89,11 +114,11 @@ func (r *repository) GetAllSubordinate() ([]string, error) {
 func (r *repository) GetRankSubordinate(subordinate string) ([]model.Stock, error) {
 	lastTime := r.GetLastCreateTime()
 	var stocks []model.Stock
-	err := r.gormDB.Where("from_days(to_days(create_time))= ? and subordinate = ?", lastTime.Format("2006-01-02"),subordinate).Find(&stocks).Error
+	err := r.gormDB.Where("from_days(to_days(create_time))= ? and subordinate = ?", lastTime.Format("2006-01-02"), subordinate).Find(&stocks).Error
 	if err != nil {
 		return nil, err
 	}
-	return stocks,nil
+	return stocks, nil
 }
 
 func (r *repository) GetLastCreateTime() time.Time {

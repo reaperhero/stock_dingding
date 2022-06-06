@@ -12,21 +12,18 @@ var (
 		Use:   "search",
 		Short: "search stock",
 		Long:  "search stock",
-		Run: func(cmd *cobra.Command, args []string) {
-			reportDailyLimitStatisticsStock()
-		},
 	}
 	hanyeSearchCmd = &cobra.Command{
-		Use:   "hanye",
-		Short: "show every harden",
-		Long:  "show every harden",
+		Use:   "sub",
+		Short: "show stock in subordinate",
+		Long:  "show stock in subordinate",
 		Run: func(cmd *cobra.Command, args []string) {
 			for _, arg := range args {
 				list, err := stock.GetStockBySubordinate(arg)
 				if err != nil {
 					log.Fatal(err)
 				}
-				fmt.Println(EchoStock(list, SortWithSubordinateMarkValue))
+				fmt.Println(EchoStock(list, SortWithSubordinateThreeDaysChange))
 			}
 		},
 	}
