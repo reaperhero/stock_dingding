@@ -9,24 +9,13 @@ import (
 	"sort"
 )
 
-func compareFun(src,dst sortFun) bool  {
+func compareFun(src, dst sortFun) bool {
 	sf1 := reflect.ValueOf(src)
 	sf2 := reflect.ValueOf(dst)
 	return sf1.Pointer() == sf2.Pointer()
 }
 func EchoStock(list []model.Stock, less sortFun) string {
-	switch {
-	case compareFun(less,SortWithSubordinateMarkValue):
-		fmt.Println("[行业>市值]")
-	case compareFun(less,SortWithSubordinatePe):
-		fmt.Println("[行业>PE]")
-	case compareFun(less,SortWithSubordinateThreeDaysChange):
-		fmt.Println("[行业>三日涨幅]")
-	case compareFun(less,SortWithSubordinateIncrease):
-		fmt.Println("[行业>单日涨幅]")
-	case compareFun(less,SortWithSubordinateSixDaysChange):
-		fmt.Println("[行业>六日涨幅]")
-	}
+
 	if less != nil {
 		CustomSortStock(list, less)
 	}
@@ -52,7 +41,20 @@ func EchoStock(list []model.Stock, less sortFun) string {
 			log.Errorf("[table.AddRow] %v", err)
 		}
 	}
-	return table.String()
+	result := table.String()
+	switch {
+	case compareFun(less, SortWithSubordinateMarkValue):
+		result = fmt.Sprintln("[行业>市值]") + result
+	case compareFun(less, SortWithSubordinatePe):
+		result = fmt.Sprintln("[行业>PE]") + result
+	case compareFun(less, SortWithSubordinateThreeDaysChange):
+		result = fmt.Sprintln("[行业>三日涨幅]") + result
+	case compareFun(less, SortWithSubordinateIncrease):
+		result = fmt.Sprintln("[行业>单日涨幅]") + result
+	case compareFun(less, SortWithSubordinateSixDaysChange):
+		result = fmt.Sprintln("[行业>六日涨幅]") + result
+	}
+	return result
 }
 
 type sortFun = func(x, y model.Stock) bool

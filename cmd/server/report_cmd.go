@@ -34,8 +34,16 @@ var (
 			reportDailyLimitStatisticsStock()
 		},
 	}
+	fileCmd = &cobra.Command{
+		Use:   "tofile",
+		Short: "report to docs folder",
+		Long:  "report to docs folder",
+		Run: func(cmd *cobra.Command, args []string) {
+			reportCareAboutStockTofile()
+		},
+	}
 )
 
 func init() {
-	reportCmd.AddCommand(hardenTodayCmd)
+	reportCmd.AddCommand(hardenTodayCmd,fileCmd)
 }
