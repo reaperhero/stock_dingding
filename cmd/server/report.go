@@ -76,9 +76,48 @@ func reportCareAboutStockTofile() {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
+	list = stock.GetLastRoseStock(3,6)
+	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
+	if err := ioutil.WriteFile(dir+"今日涨幅在3-6.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
 	list = stock.GetLastHardenStock()
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
 	if err := ioutil.WriteFile(dir+"今日涨停.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
+
+	list = stock.GetPlummetStockWithDays(7, 2)
+	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
+	if err := ioutil.WriteFile(dir+"7日内2次跌停.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
+	list = stock.GetPlummetStockWithDays(7, 3)
+	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
+	if err := ioutil.WriteFile(dir+"7日内3次跌停.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
+	list = stock.GetPlummetStockWithDays(7, 4)
+	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
+	if err := ioutil.WriteFile(dir+"7日内4次跌停.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
+
+	list = stock.GetLastFalltStock(-3,-6)
+	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
+	if err := ioutil.WriteFile(dir+"今日跌幅在3-6.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
+
+	list = stock.GetLastPlummetStock()
+	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
+	if err := ioutil.WriteFile(dir+"今日跌停.txt", []byte(content), 0666); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
@@ -86,6 +125,8 @@ func reportCareAboutStockTofile() {
 	if err != nil {
 		log.Fatal("[repository.Repository.GetAllSubordinate] %v", err)
 	}
+
+
 	for _, t := range ts {
 		stocks, err := repository.Repository.GetAllStockBySubordinate(t)
 		if err != nil {

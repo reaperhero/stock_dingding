@@ -19,8 +19,9 @@ func getTimeEnd(t time.Time) string {
 }
 
 var (
-	hardenIncrease = 9.7
-	errTime        = time.Time{}
+	hardenIncrease  = 9.7
+	plummetIncrease = -9.7
+	errTime         = time.Time{}
 )
 
 func (r *repository) CreateStockPriceRanking(ranking model.Stock) error {
@@ -50,6 +51,18 @@ func (r *repository) ListHardenStockLastDay() ([]model.Stock, error) {
 	return spStocks, nil
 }
 
+func (r *repository) ListTodayStockWithRose(start, end float64) ([]model.Stock, error) {
+	var (
+		spStocks []model.Stock
+	)
+	lastTime := r.GetLastCreateTime()
+	err := r.gormDB.Where("increase_precent > ? and increase_precent < ? and create_time > ?", start, end, getTimeZero(lastTime)).Find(&spStocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return spStocks, nil
+}
+
 func (r *repository) ListHardenStockWithDay(day int) ([]model.Stock, error) {
 	var (
 		lastStock model.Stock
@@ -61,6 +74,47 @@ func (r *repository) ListHardenStockWithDay(day int) ([]model.Stock, error) {
 	endDay := getTimeZero(lastStock.CreateTime)
 	startDay := getTimeEnd(lastStock.CreateTime.Add(-time.Duration(day*24) * time.Hour))
 	err := r.gormDB.Where("increase_precent > ? and create_time > ? and create_time < ?", hardenIncrease, startDay, endDay).Find(&spStocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return spStocks, nil
+}
+
+func (r *repository) ListPlummetStockLastDay() ([]model.Stock, error) {
+	var (
+		spStocks []model.Stock
+	)
+	lastTime := r.GetLastCreateTime()
+	err := r.gormDB.Where("increase_precent < ? and create_time > ?", plummetIncrease, getTimeZero(lastTime)).Find(&spStocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return spStocks, nil
+}
+
+func (r *repository) ListTodayStockWithFall(start, end float64) ([]model.Stock, error) {
+	var (
+		spStocks []model.Stock
+	)
+	lastTime := r.GetLastCreateTime()
+	err := r.gormDB.Where("increase_precent < ? and increase_precent > ? and create_time > ?", start, end, getTimeZero(lastTime)).Find(&spStocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return spStocks, nil
+}
+
+func (r *repository) ListPlummetStockWithDay(day int) ([]model.Stock, error) {
+	var (
+		lastStock model.Stock
+		spStocks  []model.Stock
+	)
+	if err := r.gormDB.Last(&lastStock).Error; err != nil {
+		return nil, err
+	}
+	endDay := getTimeZero(lastStock.CreateTime)
+	startDay := getTimeEnd(lastStock.CreateTime.Add(-time.Duration(day*24) * time.Hour))
+	err := r.gormDB.Where("increase_precent < ? and create_time > ? and create_time < ?", plummetIncrease, startDay, endDay).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +191,7 @@ func (r *repository) GetAllStockBySubordinate(subordinate string) ([]model.Stock
 		return nil, err
 	}
 	var spStocks []model.Stock
-	err := r.gormDB.Where("create_time > ? and subordinate = ?", getTimeZero(lastStock.CreateTime),subordinate).Find(&spStocks).Error
+	err := r.gormDB.Where("create_time > ? and subordinate = ?", getTimeZero(lastStock.CreateTime), subordinate).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
