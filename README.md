@@ -4,9 +4,44 @@
 
 - 同步数据
 
+步骤1：下载数据数据
+
+
+![图1](static/image/1.png)
+
+![图2](static/image/2.png)
+
+步骤2：配置数据库
+
+```
+log_level = "DEBUG"
+
+[mysql]
+ip = "127.0.0.1"
+port = 3306
+user = "root"
+password = "=nXCwk8l<@Dx5bL%"
+database = "dongfang_stock"
+
+
+[web]
+port = 8080
+```
+
+步骤3：开始同步
 ```
 go run cmd/cmd.go sync
 ```
+
+- 每日分析报告
+
+```
+go run .\cmd\cmd.go report tofile
+```
+
+![图2](static/image/3.png)
+
+
 
 - 最近7天，有两天是涨停的票
 
@@ -71,6 +106,7 @@ go run cmd/cmd.go report 7 2
 ```
 
 - 当天涨停行业分布
+
 ```
 go run cmd/cmd.go report today
 
@@ -198,7 +234,7 @@ go run cmd/cmd.go report today
 |     —      | 833523 |  德瑞锂电   |  12.6  |  45.8   | 11.9  |  20.4   |  17.2   |
 +------------+--------+-------------+--------+---------+-------+---------+---------+
 
-``
+```
 
 - 行业股票查询
 
@@ -501,6 +537,8 @@ go run cmd/cmd.go search sub 专用设备 中药
 
 
 ```
+
+
 - A股所有股票分类
 
 ```
@@ -594,3 +632,5 @@ go run cmd/main.go classification
 [电子化学品]: 4只股
 [船舶制造]: 4只股
 ``` 
+
+
