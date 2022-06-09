@@ -8,7 +8,11 @@ require (
 	github.com/gocolly/colly v1.2.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/liushuochen/gotable v0.0.0-20220513081608-199cbdaa349b
 	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/cobra v1.4.0
+	github.com/spf13/viper v1.12.0
+	go.uber.org/zap v1.17.0
 )
 
 require (
@@ -29,7 +33,6 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
-	github.com/liushuochen/gotable v0.0.0-20220513081608-199cbdaa349b // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -41,10 +44,8 @@ require (
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.4.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.12.0 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

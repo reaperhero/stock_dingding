@@ -5,6 +5,7 @@ import (
 	"github.com/liushuochen/gotable"
 	"github.com/reaperhero/stock_dingding/model"
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap/buffer"
 	"reflect"
 	"sort"
 )
@@ -74,3 +75,25 @@ type customSort struct {
 func (x customSort) Len() int           { return len(x.source) }
 func (x customSort) Less(i, j int) bool { return x.less(x.source[i], x.source[j]) }
 func (x customSort) Swap(i, j int)      { x.source[i], x.source[j] = x.source[j], x.source[i] }
+
+func formatMap(hardMap, plummentMap map[string][]model.Stock) []byte {
+	contentBuffer := buffer.Buffer{}
+	contentBuffer.AppendString("--------------------涨停分布--------------------\n\n")
+
+	for s, stocks := range hardMap {
+		contentBuffer.AppendString(fmt.Sprintf("行业: %-8s 涨停个数: %d只 个股: %s\n", s, len(stocks),formatStock(stocks)))
+	}
+	contentBuffer.AppendString("\n\n--------------------跌停分布--------------------\n\n")
+	for s, stocks := range plummentMap {
+		contentBuffer.AppendString(fmt.Sprintf("行业 %-8s: 涨停个数: %d只 个股: %s\n", s, len(stocks),formatStock(stocks)))
+	}
+	return contentBuffer.Bytes()
+}
+
+func formatStock(source []model.Stock) string {
+	result := ""
+	for _, stock := range source {
+		result = result + fmt.Sprintf("{代码: %s,名称: %s} ", stock.StockCode, stock.StockName)
+	}
+	return result
+}

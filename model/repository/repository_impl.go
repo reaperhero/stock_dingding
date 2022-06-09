@@ -186,14 +186,14 @@ func (r *repository) GetLastCreateTime() time.Time {
 
 func (r *repository) GetAllStockBySubordinate(subordinate string) ([]model.Stock, error) {
 
-	var lastStock model.Stock
-	if err := r.gormDB.Last(&lastStock).Error; err != nil {
-		return nil, err
-	}
+	lastTime := r.GetLastCreateTime()
 	var spStocks []model.Stock
-	err := r.gormDB.Where("create_time > ? and subordinate = ?", getTimeZero(lastStock.CreateTime), subordinate).Find(&spStocks).Error
+	err := r.gormDB.Where("create_time > ? and subordinate = ?", getTimeZero(lastTime), subordinate).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
 	return spStocks, nil
 }
+
+
+

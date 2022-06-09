@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
 	"github.com/reaperhero/stock_dingding/service/stock"
 	"github.com/reaperhero/stock_dingding/utils"
@@ -76,18 +77,25 @@ func reportCareAboutStockTofile() {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
-	list = stock.GetLastRoseStock(3,6)
+	list = stock.GetLastRoseStock(3, 6)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
 	if err := ioutil.WriteFile(dir+"今日涨幅在3-6.txt", []byte(content), 0666); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetLastHardenStock()
+	hadenStockMap := make(map[string][]model.Stock)
+	for _, hadenStock := range list {
+		if _, ok := hadenStockMap[hadenStock.Subordinate]; ok {
+			hadenStockMap[hadenStock.Subordinate] = append(hadenStockMap[hadenStock.Subordinate],hadenStock)
+			continue
+		}
+		hadenStockMap[hadenStock.Subordinate] = []model.Stock{hadenStock}
+	}
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
 	if err := ioutil.WriteFile(dir+"今日涨停.txt", []byte(content), 0666); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
-
 
 	list = stock.GetPlummetStockWithDays(7, 2)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
@@ -107,17 +115,27 @@ func reportCareAboutStockTofile() {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
-
-	list = stock.GetLastFalltStock(-3,-6)
+	list = stock.GetLastFalltStock(-3, -6)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
 	if err := ioutil.WriteFile(dir+"今日跌幅在3-6.txt", []byte(content), 0666); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
-
 	list = stock.GetLastPlummetStock()
+	plummetStockMap := make(map[string][]model.Stock)
+	for _, plummetStock := range list {
+		if _, ok := hadenStockMap[plummetStock.Subordinate]; ok {
+			plummetStockMap[plummetStock.Subordinate] = append(plummetStockMap[plummetStock.Subordinate],plummetStock)
+			continue
+		}
+		plummetStockMap[plummetStock.Subordinate] = []model.Stock{plummetStock}
+	}
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
 	if err := ioutil.WriteFile(dir+"今日跌停.txt", []byte(content), 0666); err != nil {
+		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
+	}
+
+	if err := ioutil.WriteFile(dir+"龙头定位.txt", []byte(formatMap(hadenStockMap,plummetStockMap)), 0666); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
@@ -125,7 +143,6 @@ func reportCareAboutStockTofile() {
 	if err != nil {
 		log.Fatal("[repository.Repository.GetAllSubordinate] %v", err)
 	}
-
 
 	for _, t := range ts {
 		stocks, err := repository.Repository.GetAllStockBySubordinate(t)
