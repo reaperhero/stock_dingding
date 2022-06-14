@@ -32,7 +32,7 @@ var (
 
 func syncExcelToDB() {
 	t := repository.Repository.GetLastCreateTime()
-	if time.Now().Format(timeFormat) == t.Format(timeFormat) || time.Now().Hour() > 22 {
+	if time.Now().Format(timeFormat) == t.Format(timeFormat) || time.Now().Hour() > 23 {
 		log.Info("today has been syncExcelToDB")
 		return
 	}
