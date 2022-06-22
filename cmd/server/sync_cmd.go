@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
+	"github.com/reaperhero/stock_dingding/service/clipbroad"
 	"github.com/reaperhero/stock_dingding/service/excel"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -20,7 +21,7 @@ var (
 		Short: "sync db",
 		Long:  `sync excel data to db`,
 		Run: func(cmd *cobra.Command, args []string) {
-			syncExcelToDB()
+			syncStockToDB()
 		},
 	}
 	timeFormat   = "2006-01-02"
@@ -30,15 +31,33 @@ var (
 	yiField      = []int{11, 29, 30, 31, 32}
 )
 
-func syncExcelToDB() {
+type syncType string
+
+const (
+	execlSyncType syncType = "excel"
+	clipSyncType  syncType = "clip"
+)
+
+var (
+	syncTypeConfig = execlSyncType
+)
+
+func syncStockToDB() {
 	t := repository.Repository.GetLastCreateTime()
 	if time.Now().Format(timeFormat) == t.Format(timeFormat) || time.Now().Hour() > 23 {
-		log.Info("today has been syncExcelToDB")
+		log.Info("today has been syncStockToDB")
 		return
 	}
-	xlsFile := fmt.Sprintf("./service/excel/example/%s.xlsx", time.Now().Format("20060102"))
-	rows := excel.LoadFromExcel(xlsFile)
+	var rows [][]string
 
+	switch syncTypeConfig {
+	case execlSyncType:
+		xlsFile := fmt.Sprintf("./service/excel/example/%s.xlsx", time.Now().Format("20060102"))
+		rows = excel.LoadFromExcel(xlsFile)
+	case clipSyncType:
+		rows, _ = clipbroad.GetClipBroadRows()
+		return
+	}
 	now := time.Now()
 
 	for _, row := range rows[1:] {
@@ -105,6 +124,7 @@ func syncExcelToDB() {
 			log.Fatalln(err)
 		}
 	}
+	log.Info("import success")
 }
 
 func setNumToFloat(indexs []int, s []interface{}) {
