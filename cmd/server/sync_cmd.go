@@ -39,7 +39,7 @@ const (
 )
 
 var (
-	syncTypeConfig = execlSyncType
+	syncTypeConfig = clipSyncType
 )
 
 func syncStockToDB() {
@@ -56,7 +56,6 @@ func syncStockToDB() {
 		rows = excel.LoadFromExcel(xlsFile)
 	case clipSyncType:
 		rows, _ = clipbroad.GetClipBroadRows()
-		return
 	}
 	now := time.Now()
 
