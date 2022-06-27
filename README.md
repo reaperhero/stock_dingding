@@ -6,9 +6,13 @@
 
 步骤1：下载数据数据
 
-<img src="static/image/1.png" width=256 height=256 />
+<div align=center>
+<img src="static/image/1.png" width=512 height=400 />
+</div>
 
-<img src="static/image/2.png" width=256 height=256 />
+<div align=center>
+<img src="static/image/2.png" width=512 height=400 />
+</div>
 
 步骤2：配置数据库
 
@@ -38,7 +42,9 @@ go run cmd/cmd.go sync
 go run .\cmd\cmd.go report tofile
 ```
 
-<img src="static/image/3.png" width=256 height=256 />
+<div align=center>
+<img src="static/image/3.png" width=512 height=400 />
+</div>
 
 
 - 最近7天，有两天是涨停的票
