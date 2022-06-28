@@ -7,11 +7,11 @@
 步骤1：下载数据数据
 
 <div align=center>
-<img src="static/image/1.png" width=512 height=400 />
+<img src="static/image/1.png" width=800 height=400 />
 </div>
 
 <div align=center>
-<img src="static/image/2.png" width=512 height=400 />
+<img src="static/image/2.png" width=800 height=400 />
 </div>
 
 步骤2：配置数据库
@@ -43,7 +43,7 @@ go run .\cmd\cmd.go report tofile
 ```
 
 <div align=center>
-<img src="static/image/3.png" width=512 height=400 />
+<img src="static/image/3.png" width=400 height=200 />
 </div>
 
 
