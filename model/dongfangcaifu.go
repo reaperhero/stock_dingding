@@ -50,11 +50,19 @@ type Stock struct {
 	UpPastYear          float64   `db:"up_past_year" json:"up_past_year"`                   //  近一年涨幅
 }
 
-
 const (
 	StockTableName = "stock_price_ranking"
 )
+
 // TableName 会将 User 的表名重写为 `profiles`
 func (s Stock) TableName() string {
 	return StockTableName
+}
+
+type Trend struct {
+	CreateTime      time.Time `json:"create_time"`
+	StockCode       string    `json:"stock_code"`
+	StockName       string    `json:"stock_name"`
+	IncreasePrecent float64   `json:"increase_precent"`
+	Subordinate     string    `json:"subordinate"`
 }

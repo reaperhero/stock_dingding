@@ -21,7 +21,7 @@ var (
 			)
 			day, _ = strconv.Atoi(args[0])
 			count, _ = strconv.Atoi(args[1])
-			fmt.Printf("%d 日内，%d 涨停记录",day,count)
+			fmt.Printf("%d 日内，%d 涨停记录", day, count)
 			reportCareAboutStock(day, count) //
 		},
 	}
@@ -42,8 +42,25 @@ var (
 			reportCareAboutStockTofile()
 		},
 	}
+	stionCmd = &cobra.Command{
+		Use:   "stion",
+		Short: "stion to situation folder",
+		Long:  "stion to situation folder",
+		Run: func(cmd *cobra.Command, args []string) {
+			trendStock()
+		},
+	}
+	stionInitCmd = &cobra.Command{
+		Use:   "init",
+		Short: "stion init to situation folder",
+		Long:  "stion init to situation folder",
+		Run: func(cmd *cobra.Command, args []string) {
+			initTrendStock()
+		},
+	}
 )
 
 func init() {
-	reportCmd.AddCommand(hardenTodayCmd,fileCmd)
+	reportCmd.AddCommand(hardenTodayCmd, fileCmd, stionCmd)
+	stionCmd.AddCommand(stionInitCmd)
 }

@@ -122,13 +122,9 @@ func (r *repository) ListPlummetStockWithDay(day int) ([]model.Stock, error) {
 }
 
 func (r *repository) GetAllStock() ([]model.Stock, error) {
-
-	var lastStock model.Stock
-	if err := r.gormDB.Last(&lastStock).Error; err != nil {
-		return nil, err
-	}
+	last := r.GetLastCreateTime()
 	var spStocks []model.Stock
-	err := r.gormDB.Where("from_days(to_days(create_time)) = ?", lastStock.CreateTime.Format("2006-01-02")).Find(&spStocks).Error
+	err := r.gormDB.Where("create_time = ?", last).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
@@ -188,12 +184,30 @@ func (r *repository) GetAllStockBySubordinate(subordinate string) ([]model.Stock
 
 	lastTime := r.GetLastCreateTime()
 	var spStocks []model.Stock
-	err := r.gormDB.Where("create_time > ? and subordinate = ?", getTimeZero(lastTime), subordinate).Find(&spStocks).Error
+	err := r.gormDB.Where("create_time = ? and subordinate = ?", getTimeZero(lastTime), subordinate).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
 	return spStocks, nil
 }
 
+func (r *repository) GetStockInfo(sc string) (*model.Stock, error) {
 
+	lastTime := r.GetLastCreateTime()
+	var spStocks model.Stock
+	err := r.gormDB.Where("create_time = ? and stock_code = ?", lastTime, sc).Find(&spStocks).Error
+	if err != nil {
+		return nil, err
+	}
+	return &spStocks, nil
+}
 
+func (r *repository) GetStockInfoLastDay(sc string, calTime string) ([]model.Stock, error) {
+	var spStocks []model.Stock
+
+	err := r.gormDB.Where("create_time > ? and stock_code = ?", calTime, sc).Find(&spStocks).Order("id desc").Error
+	if err != nil {
+		return nil, err
+	}
+	return spStocks, nil
+}

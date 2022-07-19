@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/emirpasic/gods/maps/hashmap"
 	"github.com/reaperhero/stock_dingding/model"
 	"github.com/reaperhero/stock_dingding/model/repository"
 	"github.com/reaperhero/stock_dingding/service/stock"
@@ -61,25 +62,25 @@ func reportCareAboutStockTofile() {
 
 	list := stock.GetHardenStockWithDays(7, 2)
 	content := EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内2次涨停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内2次涨停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetHardenStockWithDays(7, 3)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内3次涨停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内3次涨停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetHardenStockWithDays(7, 4)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内4次涨停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内4次涨停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetLastRoseStock(3, 6)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"今日涨幅在3-6.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"今日涨幅在3-6.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
@@ -87,37 +88,38 @@ func reportCareAboutStockTofile() {
 	hadenStockMap := make(map[string][]model.Stock)
 	for _, hadenStock := range list {
 		if _, ok := hadenStockMap[hadenStock.Subordinate]; ok {
-			hadenStockMap[hadenStock.Subordinate] = append(hadenStockMap[hadenStock.Subordinate],hadenStock)
+			hadenStockMap[hadenStock.Subordinate] = append(hadenStockMap[hadenStock.Subordinate], hadenStock)
 			continue
 		}
 		hadenStockMap[hadenStock.Subordinate] = []model.Stock{hadenStock}
 	}
+
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"今日涨停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"今日涨停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetPlummetStockWithDays(7, 2)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内2次跌停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内2次跌停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetPlummetStockWithDays(7, 3)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内3次跌停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内3次跌停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetPlummetStockWithDays(7, 4)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"7日内4次跌停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"7日内4次跌停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
 	list = stock.GetLastFalltStock(-3, -6)
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"今日跌幅在3-6.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"今日跌幅在3-6.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
@@ -125,17 +127,17 @@ func reportCareAboutStockTofile() {
 	plummetStockMap := make(map[string][]model.Stock)
 	for _, plummetStock := range list {
 		if _, ok := hadenStockMap[plummetStock.Subordinate]; ok {
-			plummetStockMap[plummetStock.Subordinate] = append(plummetStockMap[plummetStock.Subordinate],plummetStock)
+			plummetStockMap[plummetStock.Subordinate] = append(plummetStockMap[plummetStock.Subordinate], plummetStock)
 			continue
 		}
 		plummetStockMap[plummetStock.Subordinate] = []model.Stock{plummetStock}
 	}
 	content = EchoStock(list, SortWithSubordinateThreeDaysChange)
-	if err := ioutil.WriteFile(dir+"今日跌停.txt", []byte(content), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"今日跌停.txt", []byte(content), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
-	if err := ioutil.WriteFile(dir+"龙头定位.txt", []byte(formatMap(hadenStockMap,plummetStockMap)), 0666); err != nil {
+	if err := ioutil.WriteFile(dir+"龙头定位.txt", []byte(formatMap(hadenStockMap, plummetStockMap)), 0644); err != nil {
 		log.Fatalf("[reportCareAboutStockTofile] ioutil.WriteFile %v", err)
 	}
 
@@ -160,4 +162,61 @@ func reportCareAboutStockTofile() {
 			log.Fatalf("ioutil.WriteFile %v", err)
 		}
 	}
+}
+
+func trendStock() {
+	source := stock.GetLastHardenStock()
+
+	soMap := hashmap.New()
+	for _, m := range source {
+		soMap.Put(m.StockCode, m)
+	}
+	m := stock.NewSitonManage()
+	for _, s := range m.GetStockSet() {
+		info, err := repository.Repository.GetStockInfo(s)
+		if err != nil {
+			continue
+		}
+		soMap.Put(info.StockCode, *info)
+	}
+	relSource := make([]model.Stock, 0, 100)
+	for _, v := range soMap.Values() {
+		relSource = append(relSource, v.(model.Stock))
+	}
+	m.AddTodayStock(relSource)
+	m.RecordFile(30) // 数据保留多少天
+	m.ReportFile(10)  // 报告的天数
+}
+
+func initTrendStock() {
+
+	var (
+		initDay = 30
+		initCal = 7
+		res     []stock.Siton
+	)
+	sts := stock.GetHardenStockWithDays(initCal, 1) // 7 天内 有涨停的票
+	for _, st := range sts {
+		d := time.Now().Add(-time.Duration(initDay*24) * time.Hour).Format("2006-01-02")
+		codeStocks, err := repository.Repository.GetStockInfoLastDay(st.StockCode, d)
+		if err != nil {
+			log.Errorf("[initTrendStock] repository.Repository.GetStockInfoLastDay %v", err)
+		}
+		ton := stock.Siton{
+			StockCode:   st.StockCode,
+			StockName:   st.StockName,
+			Increases:   []float64{},
+			Subordinate: st.Subordinate,
+		}
+		for _, codeStock := range codeStocks {
+			ton.Increases = append(ton.Increases, codeStock.IncreasePrecent)
+		}
+		res = append(res, ton)
+	}
+
+	stock.RecordFileWithStions(res)
+
+	m := stock.NewSitonManage()
+
+	m.ReportFile(10) // 报告的天数
 }
