@@ -203,9 +203,10 @@ func (r *repository) GetStockInfo(sc string) (*model.Stock, error) {
 }
 
 func (r *repository) GetStockInfoLastDay(sc string, calTime string) ([]model.Stock, error) {
+
 	var spStocks []model.Stock
 
-	err := r.gormDB.Where("create_time > ? and stock_code = ?", calTime, sc).Find(&spStocks).Order("id desc").Error
+	err := r.gormDB.Where("create_time > ? and create_time < ? and stock_code = ?", calTime, getTimeEnd(r.GetLastCreateTime()), sc).Order("id").Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}

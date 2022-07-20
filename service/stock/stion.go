@@ -15,10 +15,12 @@ import (
 var (
 	fileRtName = "situation/situation_report_%s.txt"
 	fileRdName = "situation/situation_record.txt"
+	StionTime  = time.Now()
 )
 
 type Siton struct {
 	StockCode       string    `json:"stock_code"`
+	CreateTime      time.Time `json:"create_time"`
 	StockName       string    `json:"stock_name"`
 	Increases       []float64 `json:"increases"`
 	IncreasePrecent float64   `json:"-"`
@@ -77,43 +79,36 @@ func (s *SitonManage) AddTodayStock(ss []model.Stock) {
 		})
 	}
 }
+
+func (s *SitonManage) IsTodayRecord() bool {
+	ss := s.M.Values()
+	if len(ss) > 0 && ss[0].(Siton).CreateTime.Format(defaultTimeLayout) == StionTime.Format(defaultTimeLayout) {
+		return true
+	}
+	return false
+}
 func (s *SitonManage) RecordFile(reci int) {
 	var res = make([]Siton, 0, 100)
+	if s.IsTodayRecord() {
+		return
+	}
 	for _, v := range s.M.Values() {
 		s, ok := v.(Siton)
 		lDay := len(s.Increases)
 		if ok && lDay > reci {
 			s.Increases = s.Increases[lDay-reci:]
 		}
-		res = append(res,s)
+		s.CreateTime = StionTime
+		res = append(res, s)
 	}
 	file, _ := os.OpenFile(fileRdName, os.O_WRONLY|os.O_CREATE, 0644)
 	defer func() {
 		_ = file.Close()
 	}()
 
-	fileInfo ,_ := file.Stat()
-	if fileInfo.ModTime().Day() == time.Now().Day() {
-		return
-	}
-
-	marshal, err := json.MarshalIndent(res,""," ")
+	marshal, err := json.MarshalIndent(res, "", " ")
 	if err != nil {
-		log.Errorf("[SitonManag] RecordFile json.Marshal %v",err)
-		return
-	}
-	file.Write(marshal)
-}
-
-func RecordFileWithStions(ss []Siton) {
-	file, _ := os.OpenFile(fileRdName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	defer func() {
-		_ = file.Close()
-	}()
-
-	marshal, err := json.MarshalIndent(ss,""," ")
-	if err != nil {
-		log.Errorf("[SitonManag] RecordFile json.Marshal %v",err)
+		log.Errorf("[SitonManag] RecordFile json.Marshal %v", err)
 		return
 	}
 	file.Write(marshal)
@@ -168,4 +163,3 @@ func (s *SitonManage) ReportFile(calDay int) {
 		b.AddRow(v.(Siton))
 	}
 }
-

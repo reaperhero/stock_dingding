@@ -45,7 +45,7 @@ func (r *reportTable) AddRow(s Siton) {
 			return
 		}
 	case l < r.calDay:
-		row := []string{s.Subordinate, s.StockCode, s.StockName}
+		row := []string{s.Subordinate, s.StockCode, s.StockName, fmt.Sprintf("%.1f", s.IncreasePrecent)}
 		for k := r.calDay - l; k > 0; k-- {
 			row = append(row, "-")
 		}
@@ -63,7 +63,7 @@ func (r *reportTable) AddRow(s Siton) {
 
 func (r *reportTable) writeTofile() {
 
-	file, _ := os.OpenFile(fmt.Sprintf(fileRtName,time.Now().Format("2006-01-02")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	file, _ := os.OpenFile(fmt.Sprintf(fileRtName, time.Now().Format("2006-01-02")), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	defer func() {
 		_ = file.Close()
 	}()

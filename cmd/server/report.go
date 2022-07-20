@@ -165,37 +165,41 @@ func reportCareAboutStockTofile() {
 }
 
 func trendStock() {
-	source := stock.GetLastHardenStock()
 
-	soMap := hashmap.New()
-	for _, m := range source {
-		soMap.Put(m.StockCode, m)
-	}
 	m := stock.NewSitonManage()
-	for _, s := range m.GetStockSet() {
-		info, err := repository.Repository.GetStockInfo(s)
-		if err != nil {
-			continue
+	if !m.IsTodayRecord() {
+		source := stock.GetLastHardenStock()
+
+		soMap := hashmap.New()
+		for _, m := range source {
+			soMap.Put(m.StockCode, m)
 		}
-		soMap.Put(info.StockCode, *info)
+		// 查询record文件中，今天的涨幅
+		for _, s := range m.GetStockSet() {
+			info, err := repository.Repository.GetStockInfo(s)
+			if err != nil {
+				continue
+			}
+			soMap.Put(info.StockCode, *info)
+		}
+		relSource := make([]model.Stock, 0, 100)
+		for _, v := range soMap.Values() {
+			relSource = append(relSource, v.(model.Stock))
+		}
+		m.AddTodayStock(relSource)    // 内存中整合今天的今天涨停的股票
 	}
-	relSource := make([]model.Stock, 0, 100)
-	for _, v := range soMap.Values() {
-		relSource = append(relSource, v.(model.Stock))
-	}
-	m.AddTodayStock(relSource)
-	m.RecordFile(30) // 数据保留多少天
-	m.ReportFile(10)  // 报告的天数
+	m.RecordFile(30)           // 数据保留多少天
+	m.ReportFile(10)           // 报告的天数
 }
 
 func initTrendStock() {
 
 	var (
-		initDay = 30
-		initCal = 7
+		initDay = 30 // record 保留的时间
+		initCal = 7  // 报告统计天数
 		res     []stock.Siton
 	)
-	sts := stock.GetHardenStockWithDays(initCal, 1) // 7 天内 有涨停的票
+	sts := stock.GetHardenStockWithDays(initCal, 1) // 7 天内 有 count 次 涨停的票
 	for _, st := range sts {
 		d := time.Now().Add(-time.Duration(initDay*24) * time.Hour).Format("2006-01-02")
 		codeStocks, err := repository.Repository.GetStockInfoLastDay(st.StockCode, d)
@@ -207,10 +211,12 @@ func initTrendStock() {
 			StockName:   st.StockName,
 			Increases:   []float64{},
 			Subordinate: st.Subordinate,
+			CreateTime:  stock.StionTime,
 		}
 		for _, codeStock := range codeStocks {
 			ton.Increases = append(ton.Increases, codeStock.IncreasePrecent)
 		}
+
 		res = append(res, ton)
 	}
 
@@ -218,5 +224,5 @@ func initTrendStock() {
 
 	m := stock.NewSitonManage()
 
-	m.ReportFile(10) // 报告的天数
+	m.ReportFile(10)
 }
