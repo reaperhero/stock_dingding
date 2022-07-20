@@ -164,6 +164,12 @@ func reportCareAboutStockTofile() {
 	}
 }
 
+var (
+	stionDayRecord     = 30 // record 保留的时间
+	stionDayRecordInit = 7  // record 出事记录7天类有涨停的股票
+	stionDayReport     = 10 // 报告统计天数
+)
+
 func trendStock() {
 
 	m := stock.NewSitonManage()
@@ -186,22 +192,21 @@ func trendStock() {
 		for _, v := range soMap.Values() {
 			relSource = append(relSource, v.(model.Stock))
 		}
-		m.AddTodayStock(relSource)    // 内存中整合今天的今天涨停的股票
+		m.AddTodayStock(relSource) // 内存中整合今天的今天涨停的股票
 	}
-	m.RecordFile(30)           // 数据保留多少天
-	m.ReportFile(10)           // 报告的天数
+	m.RecordFile(stionDayRecord) // 数据保留多少天
+	m.ReportFile(stionDayReport)
 }
 
 func initTrendStock() {
 
 	var (
-		initDay = 30 // record 保留的时间
-		initCal = 7  // 报告统计天数
-		res     []stock.Siton
+		res []stock.Siton
 	)
-	sts := stock.GetHardenStockWithDays(initCal, 1) // 7 天内 有 count 次 涨停的票
+	sts := stock.GetHardenStockWithDays(stionDayRecordInit, 1)
+
 	for _, st := range sts {
-		d := time.Now().Add(-time.Duration(initDay*24) * time.Hour).Format("2006-01-02")
+		d := time.Now().Add(-time.Duration(stionDayRecord*24) * time.Hour).Format("2006-01-02")
 		codeStocks, err := repository.Repository.GetStockInfoLastDay(st.StockCode, d)
 		if err != nil {
 			log.Errorf("[initTrendStock] repository.Repository.GetStockInfoLastDay %v", err)
@@ -224,5 +229,5 @@ func initTrendStock() {
 
 	m := stock.NewSitonManage()
 
-	m.ReportFile(10)
+	m.ReportFile(stionDayReport)
 }

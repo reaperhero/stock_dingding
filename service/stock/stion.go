@@ -145,7 +145,7 @@ func (s *SitonManage) ReportFile(calDay int) {
 				initIncrese *= (100 + increase) / 100
 			}
 		}
-		s.IncreasePrecent = initIncrese
+		s.IncreasePrecent = initIncrese - 100
 		heap.Push(s)
 	}
 

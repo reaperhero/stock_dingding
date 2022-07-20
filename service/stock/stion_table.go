@@ -34,7 +34,7 @@ func (r *reportTable) AddRow(s Siton) {
 	l := len(s.Increases)
 	switch {
 	case l >= r.calDay:
-		row := []string{s.Subordinate, s.StockCode, s.StockName, fmt.Sprintf("%.1f", s.IncreasePrecent)}
+		row := []string{s.Subordinate, s.StockCode, s.StockName, fmt.Sprintf("%.1f%%", s.IncreasePrecent)}
 		for k := r.calDay; k > 0; k-- {
 			row = append(row, fmt.Sprintf("%.1f", s.Increases[l-k]))
 		}
@@ -45,7 +45,7 @@ func (r *reportTable) AddRow(s Siton) {
 			return
 		}
 	case l < r.calDay:
-		row := []string{s.Subordinate, s.StockCode, s.StockName, fmt.Sprintf("%.1f", s.IncreasePrecent)}
+		row := []string{s.Subordinate, s.StockCode, s.StockName, fmt.Sprintf("%.1f%%", s.IncreasePrecent)}
 		for k := r.calDay - l; k > 0; k-- {
 			row = append(row, "-")
 		}
