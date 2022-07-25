@@ -99,7 +99,12 @@ func (s *SitonManage) RecordFile(reci int) {
 			s.Increases = s.Increases[lDay-reci:]
 		}
 		s.CreateTime = StionTime
-		res = append(res, s)
+		for _, increase := range s.Increases {
+			if increase > 9.8 {
+				res = append(res, s)
+				break
+			}
+		}
 	}
 	file, _ := os.OpenFile(fileRdName, os.O_WRONLY|os.O_CREATE, 0644)
 	defer func() {
