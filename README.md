@@ -59,7 +59,7 @@ go run .\cmd\cmd.go report tofile
 ```
 
 <div align=center>
-<img src="static/image/Snipaste_2022-07-26_19-19-42.png"  />
+<img src="static/image/3.png"  />
 </div>
 
 
@@ -70,5 +70,5 @@ go run .\cmd\cmd.go report stion
 ```
 
 <div align=center>
-<img src="static/image/s" width=400 height=200 />
+<img src="static/image/Snipaste_2022-07-26_19-19-42.png" width=400 height=200 />
 </div>
