@@ -19,7 +19,7 @@ func getTimeEnd(t time.Time) string {
 }
 
 var (
-	hardenIncrease  = 9.7
+	HardenIncrease  = 9.7
 	plummetIncrease = -9.7
 	errTime         = time.Time{}
 )
@@ -31,7 +31,7 @@ func (r *repository) CreateStockPriceRanking(ranking model.Stock) error {
 // 查询指定时间有涨停的票(去重复)
 func (r *repository) ListStockPriceRanking(startTime, endTime time.Time) ([]model.Stock, error) {
 	var spStocks []model.Stock
-	err := r.gormDB.Group("stock_name").Where("increase_precent > ?", hardenIncrease).
+	err := r.gormDB.Group("stock_name").Where("increase_precent > ?", HardenIncrease).
 		Where("create_time > ?", startTime).Where("create_time < ?", endTime).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (r *repository) ListHardenStockLastDay() ([]model.Stock, error) {
 		spStocks []model.Stock
 	)
 	lastTime := r.GetLastCreateTime()
-	err := r.gormDB.Where("increase_precent > ? and create_time > ?", hardenIncrease, getTimeZero(lastTime)).Find(&spStocks).Error
+	err := r.gormDB.Where("increase_precent > ? and create_time > ?", HardenIncrease, getTimeZero(lastTime)).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (r *repository) ListHardenStockWithDay(day int) ([]model.Stock, error) {
 	}
 	endDay := getTimeZero(lastStock.CreateTime)
 	startDay := getTimeEnd(lastStock.CreateTime.Add(-time.Duration(day*24) * time.Hour))
-	err := r.gormDB.Where("increase_precent > ? and create_time > ? and create_time < ?", hardenIncrease, startDay, endDay).Find(&spStocks).Error
+	err := r.gormDB.Where("increase_precent > ? and create_time > ? and create_time < ?", HardenIncrease, startDay, endDay).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}

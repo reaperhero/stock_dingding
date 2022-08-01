@@ -5,6 +5,7 @@ import (
 	"github.com/emirpasic/gods/maps/hashmap"
 	"github.com/emirpasic/gods/trees/binaryheap"
 	"github.com/reaperhero/stock_dingding/model"
+	"github.com/reaperhero/stock_dingding/model/repository"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"math"
@@ -134,6 +135,10 @@ func (s *SitonManage) ReportFile(calDay int) {
 	})
 	for _, v := range s.M.Values() {
 		s := v.(Siton)
+		if !needReport(s.Increases) {
+			continue
+		}
+
 		var (
 			initIncrese float64 = 100
 			increaseDay         = len(s.Increases)
@@ -167,4 +172,13 @@ func (s *SitonManage) ReportFile(calDay int) {
 		}
 		b.AddRow(v.(Siton))
 	}
+}
+
+func needReport(source []float64) bool  {
+	for _, f := range source {
+		if  f >= repository.HardenIncrease {
+			return true
+		}
+	}
+	return false
 }
