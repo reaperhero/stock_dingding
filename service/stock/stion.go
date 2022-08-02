@@ -135,7 +135,7 @@ func (s *SitonManage) ReportFile(calDay int) {
 	})
 	for _, v := range s.M.Values() {
 		s := v.(Siton)
-		if !needReport(s.Increases) {
+		if !needReport(s.Increases,calDay) {
 			continue
 		}
 
@@ -174,11 +174,22 @@ func (s *SitonManage) ReportFile(calDay int) {
 	}
 }
 
-func needReport(source []float64) bool  {
-	for _, f := range source {
-		if  f >= repository.HardenIncrease {
-			return true
+func needReport(source []float64,calDay int) bool  {
+	increaseDay := len(source)
+	switch {
+	case increaseDay >= calDay:
+		for _, f := range source[increaseDay-calDay:] {
+			if  f >= repository.HardenIncrease {
+				return true
+			}
+		}
+	case increaseDay < calDay:
+		for _, increase := range source {
+			if  increase >= repository.HardenIncrease {
+				return true
+			}
 		}
 	}
+
 	return false
 }

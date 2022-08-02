@@ -132,13 +132,10 @@ func (r *repository) GetAllStock() ([]model.Stock, error) {
 }
 
 func (r *repository) GetAllSubordinate() ([]string, error) {
-	var lastStock model.Stock
-	if err := r.gormDB.Last(&lastStock).Error; err != nil {
-		return nil, err
-	}
+	time := r.GetLastCreateTime()
 	var subordinates []string
-	rows, err := r.gormDB.Raw(fmt.Sprintf("SELECT DISTINCT subordinate FROM %s WHERE from_days(to_days(create_time)) = '%s'",
-		model.StockTableName, lastStock.CreateTime.Format("2006-01-02"))).Rows()
+	rows, err := r.gormDB.Raw(fmt.Sprintf("SELECT DISTINCT subordinate FROM %s WHERE create_time = '%s'",
+		model.StockTableName,time)).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +181,7 @@ func (r *repository) GetAllStockBySubordinate(subordinate string) ([]model.Stock
 
 	lastTime := r.GetLastCreateTime()
 	var spStocks []model.Stock
-	err := r.gormDB.Where("create_time = ? and subordinate = ?", getTimeZero(lastTime), subordinate).Find(&spStocks).Error
+	err := r.gormDB.Where("create_time = ? and subordinate = ?", lastTime, subordinate).Find(&spStocks).Error
 	if err != nil {
 		return nil, err
 	}
