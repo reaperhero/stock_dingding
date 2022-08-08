@@ -12,5 +12,5 @@ func LoadFromExcel(filePath string) [][]string {
 		return nil
 	}
 	rows := f.GetRows("Sheet1")
-	return rows
+	return rows[1:]
 }

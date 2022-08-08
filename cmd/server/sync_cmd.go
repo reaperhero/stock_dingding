@@ -59,7 +59,7 @@ func syncStockToDB() {
 	}
 	now := time.Now()
 
-	for _, row := range rows[1:] {
+	for _, row := range rows {
 		lineSlice := make([]interface{}, len(row))
 		for k, v := range row {
 			v = strings.TrimSpace(v)
