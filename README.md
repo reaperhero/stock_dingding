@@ -59,7 +59,7 @@ go run .\cmd\cmd.go report tofile
 ```
 
 <div align=center>
-<img src="static/image/3.png"  />
+<img src="static/image/3.png" width=400 height=200 />
 </div>
 
 
