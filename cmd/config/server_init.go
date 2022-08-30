@@ -23,7 +23,7 @@ func init() {
 	// 输出stdout而不是默认的stderr，也可以是一个文件
 	//file, err := os.OpenFile(LOG_FILE, os.O_WRONLY | os.O_CREATE | os.O_APPEND, 0755)
 	log.SetOutput(os.Stdout)
-
+	log.SetReportCaller(true)
 	// 只记录严重或以上警告
 	switch Config.LogLevel {
 	case logDebug:

@@ -15,7 +15,7 @@ import (
 
 var (
 	fileRtName = "situation/situation_report_%s.txt"
-	fileRdName = "situation/situation_record.txt"
+	fileRdName = "situation/situation_record.json"
 	StionTime  = time.Now()
 )
 
@@ -27,6 +27,7 @@ type Siton struct {
 	IncreasePrecent float64   `json:"-"`
 	Subordinate     string    `json:"subordinate"`
 }
+
 
 type SitonManage struct {
 	M *hashmap.Map
