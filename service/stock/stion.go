@@ -28,7 +28,6 @@ type Siton struct {
 	Subordinate     string    `json:"subordinate"`
 }
 
-
 type SitonManage struct {
 	M *hashmap.Map
 }
@@ -108,7 +107,7 @@ func (s *SitonManage) RecordFile(reci int) {
 			}
 		}
 	}
-	file, _ := os.OpenFile(fileRdName, os.O_WRONLY|os.O_CREATE, 0644)
+	file, _ := os.OpenFile(fileRdName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	defer func() {
 		_ = file.Close()
 	}()
